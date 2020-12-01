@@ -54,16 +54,35 @@ class TodoDetailState extends State<TodoDetail> {
               Padding(
                 padding: EdgeInsets.only(top: 15.0, bottom: 15.0,),
                 child: TextField(
-                  autofocus: true,
-                  maxLength: 255,
+                  autofocus: true, // 20201201 autofocus to this text field when screen appear
+                  maxLength: 255, // 20201201 add length limit (+ char counter)
                   controller: titleController,
                   style: textStyle,
                   onChanged: (value) {
                     debugPrint('Something changed in title text field');
                     updateTitle();
                   },
+                  // 20201201 - click save when hitting enter key [start]
+                  onSubmitted: (value) {
+                    if (value.length != 0) {
+                      debugPrint('value = ' + value);
+                      debugPrint('Enter key pressed');
+                      _save();
+                    }
+                    else {
+                      debugPrint('value = ' + value);
+                      debugPrint('value.length = ' + value.length.toString());
+
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text('Please fill in the task before saving.'),
+                        )
+                      );
+                    }
+                  },
+                  // 20201201 [end]
                   decoration: InputDecoration(
-                    labelText: 'Title',
+                    labelText: 'Task', // 20201201 edit 'Title' to 'Task'
                     labelStyle: textStyle,
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(5.0),
