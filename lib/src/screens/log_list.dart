@@ -61,15 +61,22 @@ class LogListState extends State<LogList> {
           color: Colors.white30,
           elevation: 2.0,
           child: ListTile(
-            leading: CircleAvatar(
-              backgroundColor: Colors.black,
-              child: Text(
-                getFirstLetter(this.logList[position].title),
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
+            // 20201201 change leading to icons [start]
+            // leading: CircleAvatar(
+            //   backgroundColor: Colors.black,
+            //   child: Text(
+            //     getFirstLetter(this.logList[position].title),
+            //     style: TextStyle(
+            //       fontWeight: FontWeight.bold,
+            //     ),
+            //   ),
+            // ),
+            leading: Icon(
+              Icons.label_important_outline,
+              color: Colors.lightGreen[900],
+              size: 32.0,
             ),
+            // 20201201 [end]
             title: Text(
               this.logList[position].title,
               style: TextStyle(

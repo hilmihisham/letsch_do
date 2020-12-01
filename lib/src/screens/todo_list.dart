@@ -51,15 +51,22 @@ class TodoListState extends State<TodoList> {
           color: Colors.white,
           elevation: 2.0,
           child: ListTile(
-            leading: CircleAvatar(
-              backgroundColor: Colors.orange[900],
-              child: Text(
-                getFirstLetter(this.todoList[position].title),
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
+            // 20201201 change leading to icons [start]
+            // leading: CircleAvatar(
+            //   backgroundColor: Colors.orange[900],
+            //   child: Text(
+            //     getFirstLetter(this.todoList[position].title),
+            //     style: TextStyle(
+            //       fontWeight: FontWeight.bold,
+            //     ),
+            //   ),
+            // ),
+            leading: Icon(
+              Icons.label_important,
+              color: Colors.orangeAccent,
+              size: 32.0,
             ),
+            // 20201201 [end]
             title: Text(
               this.todoList[position].title,
               style: TextStyle(
