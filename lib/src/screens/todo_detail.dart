@@ -26,6 +26,32 @@ class TodoDetailState extends State<TodoDetail> {
 
   TodoDetailState( this.todo, this.appBarTitle );
 
+  // 20201202 add date picker for dateTodo [start]
+  DateTime todoDateChosen = DateTime.now(); // int to be today
+
+  void callDatePicker() async {
+    var order = await getDate();
+    setState(() {
+      todoDateChosen = order;
+    });
+  }
+
+  Future<DateTime> getDate() {
+    return showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime.now(),
+      lastDate: DateTime.now().add( Duration( days: 365, ) ),
+      builder: (BuildContext context, Widget child) {
+        return Theme(
+          data: ThemeData.light(),
+          child: child,
+        );
+      }
+    );
+  }
+  // 20201202 date picker [end]
+
   @override
   Widget build(BuildContext context) {
     TextStyle textStyle = Theme.of(context).textTheme.headline6;
@@ -90,6 +116,63 @@ class TodoDetailState extends State<TodoDetail> {
                   ),
                 ),
               ),
+
+              // 20201202 add date picker for dateTodo [start]
+              // Padding(
+              //   padding: EdgeInsets.only(top: 15.0, left: 10.0, right: 10.0,),
+              //   child: Text(
+              //     'To do on ' + DateFormat.yMMMd().format(todoDateChosen),
+              //     style: Theme.of(context).textTheme.headline6,
+              //     // textScaleFactor: 2.0,
+              //   ),
+              // ),
+
+              // Padding(
+              //   padding: EdgeInsets.only(top: 15.0, bottom: 5.0),
+              //   child: Row(
+              //     children: <Widget>[
+              //       RaisedButton(
+              //         color: Colors.blueAccent,
+              //         textColor: Colors.white,
+              //         child: Text(
+              //           'Select date to do this task',
+              //           // textScaleFactor: 1.5,
+              //         ),
+              //         onPressed: callDatePicker,
+              //       ),
+              //     ],
+              //   ),
+              // ),
+
+              Padding(
+                padding: EdgeInsets.only(top: 2.0, bottom: 5.0),
+                child: Row(
+                  children: <Widget>[
+                    Expanded(
+                      child: Text(
+                        'To do on ' + DateFormat.yMMMd().format(todoDateChosen),
+                        style: Theme.of(context).textTheme.headline6,
+                        // textScaleFactor: 2.0,
+                      ),
+                    ),
+
+                    Container(width: 5.0,),
+
+                    RaisedButton(
+                      color: Colors.blueAccent,
+                      textColor: Colors.white,
+                      child: Text(
+                        'Select date',
+                        // style: Theme.of(context).textTheme.headline6,
+                        textScaleFactor: 1.3,
+                      ),
+                      onPressed: callDatePicker,
+                    ),
+                  ],
+                ),
+              ),
+              // 20201202 date picker [end]
+
               Padding(
                 padding: EdgeInsets.only(top: 15.0, bottom: 15.0),
                 child: Row(
