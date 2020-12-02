@@ -10,12 +10,17 @@ class DatabaseHelper {
   static DatabaseHelper _databaseHelper;    // Singleton DatabaseHelper
 	static Database _database;                // Singleton Database
 
+  // list of column name in table 'todo_table'
   String todoTable = 'todo_table';
+
   String colId = 'id';
 	String colTitle = 'title';
 	String colDate = 'date';
   String colDone = 'done'; // data should be '0' (in progress) and '1' (done)
   String colDateCreated = 'dateCreated';
+  String colDateDone = 'dateDone';
+  // list of column name in table 'todo_table'
+  
 
   DatabaseHelper._createInstance(); // Named constructor to create instance of DatabaseHelper
 
@@ -52,7 +57,16 @@ class DatabaseHelper {
   }
 
   void _createDb(Database db, int newVersion) async {
-    await db.execute('CREATE TABLE $todoTable($colId INTEGER PRIMARY KEY AUTOINCREMENT, $colTitle TEXT, $colDate TEXT, $colDone TEXT, $colDateCreated INTEGER)');
+    await db.execute(
+      'CREATE TABLE $todoTable(' +
+        '$colId INTEGER PRIMARY KEY AUTOINCREMENT, ' +
+        '$colTitle TEXT, ' +
+        '$colDate TEXT, ' +
+        '$colDone TEXT, ' +
+        '$colDateCreated INTEGER, ' +
+        '$colDateDone INTEGER' // 20201202 add column dateDone
+      ')'
+    );
   }
 
   // Fetch Operation: Get all todo objects from database
@@ -86,11 +100,11 @@ class DatabaseHelper {
     return result;
   }
 
-  Future<int> updateTodoCompleted(Todo todo) async {
-    var db = await this.database;
-    var result = await db.update(todoTable, todo.toMap(), where: '$colId = ?', whereArgs: [todo.id]);
-    return result;
-  }
+  // Future<int> updateTodoCompleted(Todo todo) async {
+  //   var db = await this.database;
+  //   var result = await db.update(todoTable, todo.toMap(), where: '$colId = ?', whereArgs: [todo.id]);
+  //   return result;
+  // }
 
   // Delete Operation: Delete a todo object from database
   Future<int> deleteTodo(int id) async {
@@ -102,7 +116,15 @@ class DatabaseHelper {
   // update : set todo to done
   Future<int> updateDoneTodo(Todo todo) async {
     var db = await this.database;
-    int result = await db.update(todoTable, todo.updateDoneToMap('1'), where: '$colId = ?', whereArgs: [todo.id]);
+
+    // 20201202 added done date [start]
+    int doneDate = DateTime.now().millisecondsSinceEpoch;
+    debugPrint("doneDate = " + doneDate.toString());
+
+    // int result = await db.update(todoTable, todo.updateDoneToMap('1'), where: '$colId = ?', whereArgs: [todo.id]);
+    int result = await db.update(todoTable, todo.updateDoneToMap('1', DateTime.now().millisecondsSinceEpoch), where: '$colId = ?', whereArgs: [todo.id]);
+    // 20201202 done date [end]
+
     return result;
   }
 

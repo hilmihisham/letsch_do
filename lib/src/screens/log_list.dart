@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:letsch_do/src/models/todo.dart';
 import 'package:letsch_do/src/utils/database_helper.dart';
 import 'package:sqflite/sqflite.dart';
@@ -57,65 +58,71 @@ class LogListState extends State<LogList> {
     return ListView.builder(
       itemCount: count,
       itemBuilder: (BuildContext context, int position) {
-        return Card(
-          color: Colors.white30,
-          elevation: 2.0,
-          child: ListTile(
-            // 20201201 change leading to icons [start]
-            // leading: CircleAvatar(
-            //   backgroundColor: Colors.black,
-            //   child: Text(
-            //     getFirstLetter(this.logList[position].title),
-            //     style: TextStyle(
-            //       fontWeight: FontWeight.bold,
-            //     ),
-            //   ),
-            // ),
-            leading: Icon(
-              Icons.label_important_outline,
-              color: Colors.lightGreen[900],
-              size: 32.0,
-            ),
-            // 20201201 [end]
-            title: Text(
-              this.logList[position].title,
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            subtitle: Text(
-              this.logList[position].date,
-            ),
-            trailing: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: <Widget>[
-                Icon(
-                  Icons.done,
-                  color: Colors.lightGreen[900],
-                )
-                // GestureDetector(
-                //   child: Icon(
-                //     Icons.delete, 
-                //     color: Colors.red,
-                //   ),
-                //   onTap: () {
-                //     _delete(context, todoList[position]);
-                //   },
-                // ),
-              ],
-            ),
-            // onTap: () {
-            //   debugPrint("ListTile tapped");
-            //   navigateToDetail(this.todoList[position], 'Edit Todo');
-            // },
+        // 20201202 - change visual for log list [start]
+        return ListTile(
+          leading: Icon(
+            Icons.label_important_outline,
+            color: Colors.lightGreen[900],
+            size: 32.0,
           ),
+          title: Text(
+            this.logList[position].title,
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          subtitle: Text(
+            // 20201202 change date to show [start]
+            // this.logList[position].date,
+            'Finished ' + DateFormat.yMMMd().format(DateTime.fromMillisecondsSinceEpoch(this.logList[position].dateDone)),
+            // 20201202 change date [end]
+          ),
+          tileColor: logTileColor(position),
         );
+
+        // return Card(
+        //   color: Colors.white30,
+        //   elevation: 2.0,
+        //   child: ListTile(
+        //     // 20201201 change leading to icons [start]
+        //     // leading: CircleAvatar(
+        //     //   backgroundColor: Colors.black,
+        //     //   child: Text(
+        //     //     getFirstLetter(this.logList[position].title),
+        //     //     style: TextStyle(
+        //     //       fontWeight: FontWeight.bold,
+        //     //     ),
+        //     //   ),
+        //     // ),
+        //     leading: Icon(
+        //       Icons.label_important_outline,
+        //       color: Colors.lightGreen[900],
+        //       size: 32.0,
+        //     ),
+        //     // 20201201 [end]
+        //     title: Text(
+        //       this.logList[position].title,
+        //       style: TextStyle(
+        //         fontWeight: FontWeight.bold,
+        //       ),
+        //     ),
+        //     subtitle: Text(
+        //       this.logList[position].date,
+        //     ),
+        //     trailing: Row(
+        //       mainAxisSize: MainAxisSize.min,
+        //       children: <Widget>[
+        //         Icon(
+        //           Icons.done,
+        //           color: Colors.lightGreen[900],
+        //         )
+        //       ],
+        //     ),
+        //   ),
+        // );
+        // 20201202 - change visual [end]
       },
     );
-  }
-
-  getFirstLetter(String title) {
-    return title.substring(0, 2);
   }
 
   void updateLogListView() {
@@ -131,4 +138,18 @@ class LogListState extends State<LogList> {
       });
     });
   }
+
+  // 20201202 - differentiate tile color by odd and even lines [start]
+  logTileColor(int position) {
+    Color color;
+    if (position % 2 == 0) {
+      color = Colors.white24;
+    }
+    else {
+      color = Colors.white54;
+    }
+
+    return color;
+  }
+  // 20201202 tile color [end]
 }
