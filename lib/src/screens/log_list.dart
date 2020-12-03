@@ -38,6 +38,8 @@ class LogListState extends State<LogList> {
   List<Todo> logList;
   int count = 0;
 
+  List<String> dateDoneUnique = []; // 20201203 for use of date divider
+
   @override
   Widget build(BuildContext context) {
     
@@ -59,71 +61,77 @@ class LogListState extends State<LogList> {
       itemCount: count,
       itemBuilder: (BuildContext context, int position) {
         // 20201202 - change visual for log list [start]
-        return ListTile(
-          leading: Icon(
-            Icons.label_important_outline,
-            color: Colors.lightGreen[900],
-            size: 32.0,
-          ),
-          title: Text(
-            this.logList[position].title,
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          subtitle: Text(
-            // 20201202 change date to show [start]
-            // this.logList[position].date,
-            'Finished ' + DateFormat.yMMMd().format(DateTime.fromMillisecondsSinceEpoch(this.logList[position].dateDone)),
-            // 20201202 change date [end]
-          ),
-          tileColor: logTileColor(position),
-        );
+        // 20201203 adding date done divider [start]
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
 
-        // return Card(
-        //   color: Colors.white30,
-        //   elevation: 2.0,
-        //   child: ListTile(
-        //     // 20201201 change leading to icons [start]
-        //     // leading: CircleAvatar(
-        //     //   backgroundColor: Colors.black,
-        //     //   child: Text(
-        //     //     getFirstLetter(this.logList[position].title),
-        //     //     style: TextStyle(
-        //     //       fontWeight: FontWeight.bold,
-        //     //     ),
-        //     //   ),
-        //     // ),
-        //     leading: Icon(
-        //       Icons.label_important_outline,
-        //       color: Colors.lightGreen[900],
-        //       size: 32.0,
-        //     ),
-        //     // 20201201 [end]
-        //     title: Text(
-        //       this.logList[position].title,
-        //       style: TextStyle(
-        //         fontWeight: FontWeight.bold,
-        //       ),
-        //     ),
-        //     subtitle: Text(
-        //       this.logList[position].date,
-        //     ),
-        //     trailing: Row(
-        //       mainAxisSize: MainAxisSize.min,
-        //       children: <Widget>[
-        //         Icon(
-        //           Icons.done,
-        //           color: Colors.lightGreen[900],
-        //         )
-        //       ],
-        //     ),
-        //   ),
-        // );
+            uniqueDateDoneDivider(this.logList[position]), // 20201203 for use of date divider
+            
+            ListTile(
+              leading: Icon(
+                Icons.label_important_outline,
+                color: Colors.lightGreen[900],
+                size: 32.0,
+              ),
+              title: Text(
+                this.logList[position].title,
+                style: TextStyle(
+                  fontWeight: FontWeight.w500,
+                  color: Colors.grey[600],
+                ),
+              ),
+              subtitle: Text(
+                // 20201202 change date to show [start]
+                // this.logList[position].date,
+                'Finished ' + DateFormat.yMMMd().format(DateTime.fromMillisecondsSinceEpoch(this.logList[position].dateDone)),
+                // 20201202 change date [end]
+                style: TextStyle( color: Colors.grey[600], ),
+              ),
+              tileColor: logTileColor(position),
+            ),
+
+          ],
+        );
+        // 20201203 divider [end]
         // 20201202 - change visual [end]
       },
     );
   }
+
+  // 20201203 padding for dateDone divider [start]
+  Padding uniqueDateDoneDivider(Todo currentTodo) {
+
+    // dateDone in question
+    String dateDone = DateFormat.yMMMd().format(DateTime.fromMillisecondsSinceEpoch(currentTodo.dateDone));
+    debugPrint("dateDone = " + dateDone);
+
+    // if dateDone not yet in unique list
+    if (!dateDoneUnique.contains(dateDone)) {
+      
+      // add unique dateDone to list
+      dateDoneUnique.add(dateDone);
+
+      // create divider visuals
+      return Padding(
+        padding: EdgeInsets.only(top: 15.0, bottom: 15.0, left: 15.0,),
+        child: Text(
+          dateDone,
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+          ),
+          textScaleFactor: 1.2,
+        ),
+      );
+    }
+    else {
+      return Padding(
+        padding: EdgeInsets.zero,
+      );
+    }
+    
+  }
+  // 20201203 dateDone divider [end]
 
   void updateLogListView() {
     final Future<Database> dbFuture = databaseHelper.initializeDatabase();
