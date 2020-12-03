@@ -9,6 +9,7 @@ class Todo {
 
   int _dateCreated; // millisecondsSinceEpoch
   int _dateDone; // millisecondsSinceEpoch
+  int _dateTodo; // millisecondsSinceEpoch, set at 0000hrs
 
   Todo( this._title, this._date );
 
@@ -25,6 +26,8 @@ class Todo {
   int get dateCreated => _dateCreated;
 
   int get dateDone => _dateDone;
+
+  int get dateTodo => _dateTodo;
 
   set title(String titleInput) {
     if (titleInput.length <= 255) {
@@ -48,6 +51,10 @@ class Todo {
     this._dateDone = dateDone;
   }
 
+  set dateTodo(int dateTodo) {
+    this._dateTodo = dateTodo;
+  }
+
   // convert node to map object
   // used for insert or update todo (called at todo_detail._save, every value has been set there
   Map<String, dynamic> toMap() {
@@ -63,6 +70,7 @@ class Todo {
     map['done'] = _done;
     map['dateCreated'] = _dateCreated;
     map['dateDone'] = _dateDone;
+    map['dateTodo'] = _dateTodo;
 
     return map;
   }
@@ -75,6 +83,7 @@ class Todo {
     this._done = map['done'];
     this._dateCreated = map['dateCreated'];
     this._dateDone = map['dateDone'];
+    this._dateTodo = map['dateTodo'];
   }
 
   // updating node to done (done value 1)
@@ -88,6 +97,7 @@ class Todo {
     map['title'] = _title;
     map['date'] = _date;
     map['dateCreated'] = _dateCreated;
+    map['dateTodo'] = _dateTodo;
 
     map['done'] = doneValue;
 

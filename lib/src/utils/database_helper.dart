@@ -19,6 +19,7 @@ class DatabaseHelper {
   String colDone = 'done'; // data should be '0' (in progress) and '1' (done)
   String colDateCreated = 'dateCreated';
   String colDateDone = 'dateDone';
+  String colDateTodo = 'dateTodo';
   // list of column name in table 'todo_table'
   
 
@@ -64,7 +65,8 @@ class DatabaseHelper {
         '$colDate TEXT, ' +
         '$colDone TEXT, ' +
         '$colDateCreated INTEGER, ' +
-        '$colDateDone INTEGER' // 20201202 add column dateDone
+        '$colDateDone INTEGER,' + // 20201202 add column dateDone
+        '$colDateTodo INTEGER' // 20201203 add column dateTodo
       ')'
     );
   }
