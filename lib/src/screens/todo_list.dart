@@ -92,7 +92,9 @@ class TodoListState extends State<TodoList> {
         final todoItem = todoList.elementAt(position); // init each item in todo list here
 
         return Dismissible(
-          key: ValueKey(todoItem),
+          // key: ValueKey(todoItem),
+          // key: Key(todoItem.id.toString()),
+          key: UniqueKey(),
           child: ListTile(
             // 20201201 change leading to icons [start]
             // leading: CircleAvatar(
@@ -119,7 +121,8 @@ class TodoListState extends State<TodoList> {
             subtitle: Text(
               // 20201202 change date to show [start]
               //todoItem.date,
-              'Added ' + DateFormat.yMMMd().add_Hms().format(DateTime.fromMillisecondsSinceEpoch(todoItem.dateCreated)),
+              // 'Added ' + DateFormat.yMMMd().add_Hms().format(DateTime.fromMillisecondsSinceEpoch(todoItem.dateCreated)),
+              'To do on ' + DateFormat.yMMMd().format(DateTime.fromMillisecondsSinceEpoch(todoItem.dateTodo)),
               // 20201202 change date [end]
             ),
             // trailing: Row(
@@ -150,18 +153,49 @@ class TodoListState extends State<TodoList> {
               navigateToDetail(todoItem, 'Edit Todo');
             },
           ),
-          onDismissed: (direction) {
-            // remove dismissed item from list first
-            todoList.removeAt(position);
+          // 20201203 change onDismissed to confirmDismiss [start]
+          // onDismissed: (direction) {
+          //   // remove dismissed item from list first
+          //   todoList.removeAt(position);
 
-            // action to be taken after swipe action
+          //   // action to be taken after swipe action
+          //   if (direction == DismissDirection.startToEnd) {
+          //     _done(context, todoItem);
+          //   }
+          //   else {
+          //     _delete(context, todoItem); // temp method to change to _delete
+          //   }
+          // },
+          confirmDismiss: (direction) async {
+
+            // todoList.removeAt(position);
+            for (var item in todoList) {
+              debugPrint('item in tree before = ' + item.title);
+              debugPrint('item id before      = ' + item.id.toString());
+            }
+
+            todoList.remove(todoItem);
+
+            for (var item in todoList) {
+              debugPrint('item in tree after = ' + item.title);
+              debugPrint('item id after      = ' + item.id.toString());
+            }
+
+            debugPrint('-------------------------------------------------');
+
             if (direction == DismissDirection.startToEnd) {
               _done(context, todoItem);
+              return true;
+            }
+            else if (direction == DismissDirection.endToStart) {
+              _delete(context, todoItem);
+              return true;
             }
             else {
-              _delete(context, todoItem); // temp method to change to _delete
+              return false;
             }
           },
+          // 20201203 confirmDismissed [end]
           background: Container(
             // swipe to right bg
             color: Colors.green,
@@ -257,7 +291,7 @@ class TodoListState extends State<TodoList> {
     int result = await databaseHelper.deleteTodo(todo.id);
     if(result != 0) {
       debugPrint('delete ok!');
-      // _showSnackBar(context, 'Todo Deleted Succesfully');
+      _showSnackBar(context, 'Task deleted.');
       // updateListView();
     }
   }
@@ -266,7 +300,7 @@ class TodoListState extends State<TodoList> {
   void _done(BuildContext context, Todo todo) async {
     int result = await databaseHelper.updateDoneTodo(todo);
     if (result != 0) {
-      _showSnackBar(context, 'Todo Marked Done Succesfully');
+      _showSnackBar(context, 'Task is done. Good job!');
       // updateListView();
     }
   }
@@ -281,6 +315,9 @@ class TodoListState extends State<TodoList> {
   }
 
   void navigateToDetail(Todo todo, String title) async {
+
+    ScaffoldMessenger.of(context).removeCurrentSnackBar(); // 20201203 hero error fix
+
     bool result = await Navigator.push(
       context, 
       MaterialPageRoute(
@@ -289,6 +326,8 @@ class TodoListState extends State<TodoList> {
         }
       )
     );
+
+    debugPrint("navigateToDetail result = " + result.toString());
 
     if(result == true) {
       updateListView();
