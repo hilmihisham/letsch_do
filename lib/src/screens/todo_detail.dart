@@ -27,21 +27,20 @@ class TodoDetailState extends State<TodoDetail> {
   TodoDetailState( this.todo, this.appBarTitle );
 
   // 20201202 add date picker for dateTodo [start]
-  DateTime todoDateChosen = DateTime.now(); // int to be today
+  DateTime dateTodayInit = DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day); // today's date at 0000hrs
+  DateTime todoDateChosen; // = DateTime.now(); // int to be today
 
-  void callDatePicker() async {
-    var order = await getDate();
-    setState(() {
-      todoDateChosen = order;
-    });
-  }
+  Future<void> _selectDate(BuildContext context) async {
 
-  Future<DateTime> getDate() {
-    return showDatePicker(
+    debugPrint("dateTodayInit = " + dateTodayInit.toString());
+
+    final DateTime datePicked = await showDatePicker(
       context: context,
-      initialDate: DateTime.now(),
-      firstDate: DateTime.now(),
-      lastDate: DateTime.now().add( Duration( days: 365, ) ),
+      initialDate: todoDateChosen,
+      firstDate: dateTodayInit,
+      lastDate: DateTime.now().add( Duration( days: 365*3, ) ),
+      helpText: 'SELECT TASK DATE',
+      errorInvalidText: 'Calm down, you\'re planning too far ahead.',
       builder: (BuildContext context, Widget child) {
         return Theme(
           data: ThemeData.light(),
@@ -49,6 +48,14 @@ class TodoDetailState extends State<TodoDetail> {
         );
       }
     );
+
+    if (datePicked != null && datePicked != todoDateChosen) {
+      debugPrint("datePicked = " + datePicked.toString());
+
+      setState(() {
+        todoDateChosen = datePicked;
+      });
+    }
   }
   // 20201202 date picker [end]
 
@@ -56,6 +63,20 @@ class TodoDetailState extends State<TodoDetail> {
   Widget build(BuildContext context) {
     TextStyle textStyle = Theme.of(context).textTheme.headline6;
     titleController.text = todo.title;
+
+    if (this.todo.dateTodo == null) {
+      todoDateChosen = DateTime.now();
+      debugPrint("init todoDateChosen = " + todoDateChosen.toString());
+    }
+    else {
+      if (todoDateChosen == null) {
+        todoDateChosen = DateTime.fromMillisecondsSinceEpoch(this.todo.dateTodo);
+        debugPrint("prev todoDateChosen = " + todoDateChosen.toString());
+      }
+      else {
+        debugPrint("from cal todoDateChosen = " + todoDateChosen.toString());
+      }
+    }
 
     return WillPopScope(
       onWillPop: () {
@@ -82,6 +103,8 @@ class TodoDetailState extends State<TodoDetail> {
                 child: TextField(
                   autofocus: true, // 20201201 autofocus to this text field when screen appear
                   maxLength: 255, // 20201201 add length limit (+ char counter)
+                  maxLines: null, // 20201203 expands text field for multi-line input
+                  textInputAction: TextInputAction.done, // 20201203 enter key trigger onSubmitted
                   controller: titleController,
                   style: textStyle,
                   onChanged: (value) {
@@ -90,23 +113,9 @@ class TodoDetailState extends State<TodoDetail> {
                   },
                   // 20201201 - click save when hitting enter key [start]
                   onSubmitted: (value) {
-                    if (value.length != 0) {
-                      debugPrint('value = ' + value);
-                      debugPrint('Enter key pressed');
-                      _save();
-                    }
-                    else {
-                      debugPrint('value = ' + value);
-                      debugPrint('value.length = ' + value.length.toString());
-
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text('Please fill in the task before saving.'),
-                        )
-                      );
-                    }
+                    _save();
                   },
-                  // 20201201 [end]
+                  // 20201201 enter save [end]
                   decoration: InputDecoration(
                     labelText: 'Task', // 20201201 edit 'Title' to 'Task'
                     labelStyle: textStyle,
@@ -118,34 +127,8 @@ class TodoDetailState extends State<TodoDetail> {
               ),
 
               // 20201202 add date picker for dateTodo [start]
-              // Padding(
-              //   padding: EdgeInsets.only(top: 15.0, left: 10.0, right: 10.0,),
-              //   child: Text(
-              //     'To do on ' + DateFormat.yMMMd().format(todoDateChosen),
-              //     style: Theme.of(context).textTheme.headline6,
-              //     // textScaleFactor: 2.0,
-              //   ),
-              // ),
-
-              // Padding(
-              //   padding: EdgeInsets.only(top: 15.0, bottom: 5.0),
-              //   child: Row(
-              //     children: <Widget>[
-              //       RaisedButton(
-              //         color: Colors.blueAccent,
-              //         textColor: Colors.white,
-              //         child: Text(
-              //           'Select date to do this task',
-              //           // textScaleFactor: 1.5,
-              //         ),
-              //         onPressed: callDatePicker,
-              //       ),
-              //     ],
-              //   ),
-              // ),
-
               Padding(
-                padding: EdgeInsets.only(top: 2.0, bottom: 5.0),
+                padding: EdgeInsets.only(bottom: 5.0),
                 child: Row(
                   children: <Widget>[
                     Expanded(
@@ -163,10 +146,9 @@ class TodoDetailState extends State<TodoDetail> {
                       textColor: Colors.white,
                       child: Text(
                         'Select date',
-                        // style: Theme.of(context).textTheme.headline6,
                         textScaleFactor: 1.3,
                       ),
-                      onPressed: callDatePicker,
+                      onPressed: () => _selectDate(context),
                     ),
                   ],
                 ),
@@ -180,7 +162,7 @@ class TodoDetailState extends State<TodoDetail> {
                     Expanded(
                       child: RaisedButton(
                         color: Theme.of(context).primaryColorDark,
-                        textColor: Theme.of(context).primaryColorLight,
+                        textColor: Colors.white, //Theme.of(context).primaryColorLight,
                         child: Text(
                           'Save',
                           textScaleFactor: 1.5,
@@ -199,11 +181,12 @@ class TodoDetailState extends State<TodoDetail> {
                     Expanded(
                       child: RaisedButton(
                         color: Theme.of(context).primaryColorDark,
-                        textColor: Theme.of(context).primaryColorLight,
-                        child: Text(
-                          'Delete',
-                          textScaleFactor: 1.5,
-                        ),
+                        textColor: Colors.white, //Theme.of(context).primaryColorLight,
+                        // child: Text(
+                        //   'Delete',
+                        //   textScaleFactor: 1.5,
+                        // ),
+                        child: cancelOrDeleteButton(),
                         onPressed: () {
                           setState(() {
                             debugPrint("Delete button clicked");
@@ -223,7 +206,28 @@ class TodoDetailState extends State<TodoDetail> {
     );
   }
 
+  Text cancelOrDeleteButton() {
+    if (appBarTitle.startsWith('A')) {
+      // title: Add Todo
+      debugPrint('appBarTitle = ' + appBarTitle);
+      return Text(
+        'Cancel',
+        textScaleFactor: 1.5,
+      );
+    }
+    else {
+      // title: Edit Todo
+      debugPrint('appBarTitle = ' + appBarTitle);
+      debugPrint('here');
+      return Text(
+        'Delete',
+        textScaleFactor: 1.5,
+      );
+    }
+  }
+
   void moveToLastScreen() {
+    ScaffoldMessenger.of(context).removeCurrentSnackBar(); // 20201203 hero error fix
 		Navigator.pop(context, true);
   }
 
@@ -233,33 +237,62 @@ class TodoDetailState extends State<TodoDetail> {
 
   void _save() async {
     
-    moveToLastScreen();
+    // 20201203 fix to prevent save button saving task with empty title [start]
+    if (todo.title.length != 0) {
+      moveToLastScreen();
 
-    todo.date = DateFormat.yMMMd().add_Hms().format(DateTime.now());
-    debugPrint('todo.date = ' + todo.date);
+      todo.date = DateFormat.yMMMd().add_Hms().format(DateTime.now());
+      debugPrint('todo.date = ' + todo.date);
 
-    todo.done = "0";
+      todo.done = "0";
 
-    todo.dateCreated = DateTime.now().millisecondsSinceEpoch.toInt();
+      todo.dateCreated = DateTime.now().millisecondsSinceEpoch.toInt();
+      debugPrint("dateCreated = " + todo.dateCreated.toString());
 
-    int result;
+      todo.dateTodo = todoDateChosen.millisecondsSinceEpoch;
+      debugPrint("dateTodo = " + todo.dateTodo.toString());
 
-    if(todo.id != null) {
-      // case 1 - update operation
-      result = await helper.updateTodo(todo);
+      int result;
+
+      if(todo.id != null) {
+        // case 1 - update operation
+        result = await helper.updateTodo(todo);
+      }
+      else {
+        // case 2 - insert operation
+        result = await helper.insertTodo(todo);
+      }
+
+      if(result != 0) {
+        // success
+        // _showAlertDialog('Status', 'Todo saved successfully!');
+        if (appBarTitle.startsWith('A')) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('New task created!'),
+            )
+          );
+        }
+        else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Task updated.'),
+            )
+          );
+        }
+      }
+      else {
+        _showAlertDialog('Error!', 'Problem Saving New Task');
+      }
     }
     else {
-      // case 2 - insert operation
-      result = await helper.insertTodo(todo);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Please fill in the task before saving.'),
+        )
+      );
     }
-
-    if(result != 0) {
-      // success
-      _showAlertDialog('Status', 'Todo saved successfully!');
-    }
-    else {
-      _showAlertDialog('Status', 'Problem Saving Todo');
-    }
+    // 20201203 empty title fix [end]
   }
 
   void _delete() async {
@@ -268,14 +301,24 @@ class TodoDetailState extends State<TodoDetail> {
 		// Case 1: If user is trying to delete the NEW todo i.e. he has come to
 		// the detail page by pressing the FAB of todoList page.
 		if (todo.id == null) {
-			_showAlertDialog('Status', 'No Todo was deleted');
+			// _showAlertDialog('Status', 'No Todo was deleted');
+      // ScaffoldMessenger.of(context).showSnackBar(
+      //   SnackBar(
+      //     content: Text('New task is not created.'),
+      //   )
+      // );
 			return;
 		}
 
 		// Case 2: User is trying to delete the old todo that already has a valid ID.
 		int result = await helper.deleteTodo(todo.id);
 		if (result != 0) {
-			_showAlertDialog('Status', 'Todo Deleted Successfully');
+			// _showAlertDialog('Status', 'Task Deleted Successfully');
+      ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Task deleted.'),
+          )
+        );
 		} else {
 			_showAlertDialog('Status', 'Error Occured while Deleting Todo');
 		}
