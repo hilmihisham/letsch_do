@@ -27,7 +27,7 @@ class TodoDetailState extends State<TodoDetail> {
   TodoDetailState( this.todo, this.appBarTitle );
 
   // 20201202 add date picker for dateTodo [start]
-  DateTime dateTodayInit = DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day); // today's date at 0000hrs
+  DateTime dateTodayInit = DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day); // today's date at 0000hrs, for showDatePicker use
   DateTime todoDateChosen; // = DateTime.now(); // int to be today
 
   Future<void> _selectDate(BuildContext context) async {
@@ -63,20 +63,38 @@ class TodoDetailState extends State<TodoDetail> {
   Widget build(BuildContext context) {
     TextStyle textStyle = Theme.of(context).textTheme.headline6;
     titleController.text = todo.title;
-
-    if (this.todo.dateTodo == null) {
-      todoDateChosen = DateTime.now();
-      debugPrint("init todoDateChosen = " + todoDateChosen.toString());
+    
+    // 20201204 fix todoDateChosen always init to today for "Add Todo" screen [start]
+    if (appBarTitle.startsWith("E") && todoDateChosen == null) {
+      // for "Edit Todo" screen, init from existing dateTodo
+      todoDateChosen = DateTime.fromMillisecondsSinceEpoch(this.todo.dateTodo);
+      debugPrint("existing dateTodo = " + todoDateChosen.toString());
     }
     else {
       if (todoDateChosen == null) {
-        todoDateChosen = DateTime.fromMillisecondsSinceEpoch(this.todo.dateTodo);
-        debugPrint("prev todoDateChosen = " + todoDateChosen.toString());
+        // "Add Todo" screen, first time open
+        todoDateChosen = DateTime.now();
+        debugPrint("init todoDateChosen = " + todoDateChosen.toString());
       }
       else {
+        // date already chosen from calendar, do nothing
         debugPrint("from cal todoDateChosen = " + todoDateChosen.toString());
       }
     }
+    // if (this.todo.dateTodo == null) {
+    //   todoDateChosen = DateTime.now();
+    //   debugPrint("init todoDateChosen = " + todoDateChosen.toString());
+    // }
+    // else {
+    //   if (todoDateChosen == null) {
+    //     todoDateChosen = DateTime.fromMillisecondsSinceEpoch(this.todo.dateTodo);
+    //     debugPrint("prev todoDateChosen = " + todoDateChosen.toString());
+    //   }
+    //   else {
+    //     debugPrint("from cal todoDateChosen = " + todoDateChosen.toString());
+    //   }
+    // }
+    // 20201204 fix todoDateChosen [end]
 
     return WillPopScope(
       onWillPop: () {
@@ -108,7 +126,7 @@ class TodoDetailState extends State<TodoDetail> {
                   controller: titleController,
                   style: textStyle,
                   onChanged: (value) {
-                    debugPrint('Something changed in title text field');
+                    // debugPrint('Something changed in title text field');
                     updateTitle();
                   },
                   // 20201201 - click save when hitting enter key [start]
@@ -249,8 +267,12 @@ class TodoDetailState extends State<TodoDetail> {
       todo.dateCreated = DateTime.now().millisecondsSinceEpoch.toInt();
       debugPrint("dateCreated = " + todo.dateCreated.toString());
 
-      todo.dateTodo = todoDateChosen.millisecondsSinceEpoch;
+      // 20201204 clean time data to 0000hrs for dateTodo [start]
+      // todo.dateTodo = todoDateChosen.millisecondsSinceEpoch;
+      todo.dateTodo = DateTime(todoDateChosen.year, todoDateChosen.month, todoDateChosen.day).millisecondsSinceEpoch;
+      // 20201204 clean dateTodo [end]
       debugPrint("dateTodo = " + todo.dateTodo.toString());
+      debugPrint("dateTodo = " + DateFormat.yMMMd().add_Hms().format(DateTime.fromMillisecondsSinceEpoch(todo.dateTodo)));
 
       int result;
 
