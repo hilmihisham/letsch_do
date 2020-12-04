@@ -80,11 +80,19 @@ class DatabaseHelper {
     return result;
   }
 
+  // fetch: get all not yet done todo from db, starting with today's task and beyond
+  Future<List<Map<String, dynamic>>> getFutureTodoMapList() async {
+    Database db = await this.database;
+
+    var result = await db.query(todoTable, where: '$colDone = ?', whereArgs: ['0'], orderBy: '$colDateTodo ASC'); // update to only get done = 0, order by dateTodo asc
+    return result;
+  }
+
   // fetch: get all done todo from db
   Future<List<Map<String, dynamic>>> getLogMapList() async {
     Database db = await this.database;
 
-    var result = await db.query(todoTable, where: '$colDone = ?', whereArgs: ['1'], orderBy: '$colDateCreated DESC');
+    var result = await db.query(todoTable, where: '$colDone = ?', whereArgs: ['1'], orderBy: '$colDateDone DESC');
     return result;
   }
 
@@ -120,11 +128,13 @@ class DatabaseHelper {
     var db = await this.database;
 
     // 20201202 added done date [start]
-    int doneDate = DateTime.now().millisecondsSinceEpoch;
-    debugPrint("doneDate = " + doneDate.toString());
+    // int doneDate = DateTime.now().millisecondsSinceEpoch;
+    int doneDate = DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day).millisecondsSinceEpoch; // today's date at 0000hrs
+    debugPrint("doneDate int  = " + doneDate.toString());
+    debugPrint("doneDate real = " + DateTime.fromMillisecondsSinceEpoch(doneDate).toString());
 
     // int result = await db.update(todoTable, todo.updateDoneToMap('1'), where: '$colId = ?', whereArgs: [todo.id]);
-    int result = await db.update(todoTable, todo.updateDoneToMap('1', DateTime.now().millisecondsSinceEpoch), where: '$colId = ?', whereArgs: [todo.id]);
+    int result = await db.update(todoTable, todo.updateDoneToMap('1', doneDate), where: '$colId = ?', whereArgs: [todo.id]);
     // 20201202 done date [end]
 
     return result;
@@ -154,11 +164,34 @@ class DatabaseHelper {
     return todoList;
   }
 
+  // getting future list
+  Future<List<Todo>> getFutureTodoList() async {
+
+    var futureTodoMapList = await getFutureTodoMapList();
+    int count = futureTodoMapList.length;
+
+    int todayDate = DateTime.now().millisecondsSinceEpoch;
+
+    List<Todo> futureTodoList = List<Todo>();
+
+    // get only future todo to add into futureTodoList
+    for (var i = 0; i < count; i++) {
+      Todo todoObjectFromMap = Todo.fromMapObject(futureTodoMapList[i]);
+
+      if (todoObjectFromMap.dateTodo > todayDate) {
+        futureTodoList.add(todoObjectFromMap);
+      }
+    }
+
+    return futureTodoList;
+  }
+
   // getting log list
   Future<List<Todo>> getLogList() async {
 
     var logMapList = await getLogMapList();
     int count = logMapList.length;
+    debugPrint("logList total entry = " + count.toString());
 
     List<Todo> logList = List<Todo>();
 

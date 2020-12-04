@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:letsch_do/src/screens/future_list.dart';
 import 'package:letsch_do/src/screens/log_list.dart';
 import 'package:letsch_do/src/screens/todo_list.dart';
 
@@ -21,11 +22,15 @@ class _HomeState extends State<Home> {
   final List<Widget> _children = [
     LogList(),
     TodoList(),
+    FutureList(),
   ];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: Text('Let\'sch Do'),
+      ),
       body: _children[_currentNavBarIndex],
 
       bottomNavigationBar: BottomNavigationBar(
@@ -39,7 +44,11 @@ class _HomeState extends State<Home> {
           BottomNavigationBarItem(
             icon: Icon(Icons.today),
             label: 'To-do Today',
-          )
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.fast_forward),
+            label: 'Upcoming',
+          ),
         ],
       ),
     );
