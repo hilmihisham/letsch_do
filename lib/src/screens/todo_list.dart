@@ -30,9 +30,9 @@ class TodoListState extends State<TodoList> {
 
     if (todoList.length != 0) {
       return Scaffold(
-        appBar: AppBar(
-          title: Text('Todo + SQL'),
-        ),
+        // appBar: AppBar(
+        //   title: Text('Todo + SQL'),
+        // ),
         body: getTodoListView(),
         floatingActionButton: FloatingActionButton(
           onPressed: () {
@@ -50,9 +50,9 @@ class TodoListState extends State<TodoList> {
       //   child: Text('Todo List empty'),
       // );
       return Scaffold(
-        appBar: AppBar(
-          title: Text('Todo + SQL'),
-        ),
+        // appBar: AppBar(
+        //   title: Text('Todo + SQL'),
+        // ),
         body: Center(
           child: Text('Todo List empty'),
         ),
