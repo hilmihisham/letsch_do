@@ -4,11 +4,11 @@ class Todo {
   int _id;
   String _title;
   String _date;
-  String _done = '0'; // init done = 0 (not yet done)
+  String _done = '0'; // init done = 0
   // String _description;
 
   int _dateCreated; // millisecondsSinceEpoch
-  int _dateDone; // millisecondsSinceEpoch
+  int _dateDone; // millisecondsSinceEpoch, set at 0000hrs
   int _dateTodo; // millisecondsSinceEpoch, set at 0000hrs
 
   Todo( this._title, this._date );
