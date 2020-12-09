@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:letsch_do/src/screens/future_list.dart';
 import 'package:letsch_do/src/screens/log_list.dart';
+import 'package:letsch_do/src/screens/side_drawer.dart';
 import 'package:letsch_do/src/screens/todo_list.dart';
 
 // home skeleton class to have the bottom nav bar appearing on the app
@@ -31,6 +32,9 @@ class _HomeState extends State<Home> {
       appBar: AppBar(
         title: Text('Let\'sch Do'),
       ),
+
+      drawer: SideDrawer(), // 20201209 add side drawer
+
       body: _children[_currentNavBarIndex],
 
       bottomNavigationBar: BottomNavigationBar(
