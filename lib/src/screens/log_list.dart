@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:grouped_list/grouped_list.dart';
 import 'package:intl/intl.dart';
 import 'package:letsch_do/src/models/todo.dart';
 import 'package:letsch_do/src/utils/database_helper.dart';
@@ -32,7 +33,8 @@ class LogListState extends State<LogList> {
       //   title: Text('Todo + SQL'),
       // ),
       // body: getLogListView(),
-      body: getLogListStaticView(), // 20201204 static ListView
+      // body: getLogListStaticView(), // 20201204 static ListView
+      body: getGroupedLogListView(), // 20201209 GroupedListView
     );
   }
 
@@ -89,7 +91,7 @@ class LogListState extends State<LogList> {
               subtitle: Text(
                 // 20201202 change date to show [start]
                 // this.logList[position].date,
-                'Finished ' + DateFormat.yMMMd().format(DateTime.fromMillisecondsSinceEpoch(logList.elementAt(k).dateDone)), // TODO: maybe use dateDoneList[j] later
+                'Finished ' + DateFormat.yMMMd().format(DateTime.fromMillisecondsSinceEpoch(logList.elementAt(k).dateDone)),
                 // 20201202 change date [end]
                 style: TextStyle( color: Colors.grey[600], ),
               ),
@@ -111,6 +113,50 @@ class LogListState extends State<LogList> {
     );
   }
   // 20201204 static ListView [end]
+
+  // 20201209 using GroupedListView widget for logList [start]
+  GroupedListView getGroupedLogListView() {
+    return GroupedListView<dynamic, int>(
+      elements: logList,
+      groupBy: (todo) {
+        return todo.dateDone;
+      },
+      groupSeparatorBuilder: (int dateDone) => Padding(
+        padding: EdgeInsets.only(top: 15.0, bottom: 15.0, left: 15.0,),
+        child: Text(
+          DateFormat.yMMMd().format(DateTime.fromMillisecondsSinceEpoch(dateDone)),
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+          ),
+          textScaleFactor: 1.2,
+        ),
+      ),
+      order: GroupedListOrder.DESC,
+      itemBuilder: (BuildContext context, dynamic todo) => ListTile(
+        leading: Icon(
+          Icons.label_important_outline,
+          color: Colors.lightGreen[900],
+          size: 32.0,
+        ),
+        title: Text(
+          todo.title,
+          style: TextStyle(
+            fontWeight: FontWeight.w500,
+            color: Colors.grey[600],
+          ),
+        ),
+        subtitle: Text(
+          // 20201202 change date to show [start]
+          // this.logList[position].date,
+          'Finished ' + DateFormat.yMMMd().format(DateTime.fromMillisecondsSinceEpoch(todo.dateDone)),
+          // 20201202 change date [end]
+          style: TextStyle( color: Colors.grey[600], ),
+        ),
+        tileColor: logTileColor(logList.indexOf(todo)),
+      ),
+    );
+  }
+  // 20201209 GroupedListView [end]
 
   // ListView getLogListView() {
   //   return ListView.builder(
