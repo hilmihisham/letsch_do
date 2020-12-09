@@ -19,7 +19,7 @@ class _HomeState extends State<Home> {
   int _currentNavBarIndex = 1; // init first page appearing after app open to be TodoList screen
 
   // all pages must be insert into this list
-  final List<Widget> _children = [
+  final List<Widget> _pages = [
     LogList(),
     TodoList(),
     FutureList(),
@@ -31,7 +31,9 @@ class _HomeState extends State<Home> {
       appBar: AppBar(
         title: Text('Let\'sch Do'),
       ),
-      body: _children[_currentNavBarIndex],
+      body: Center(
+        child: _buildScreens(),
+      ),
 
       bottomNavigationBar: BottomNavigationBar(
         onTap: onTabTapped,
@@ -60,4 +62,20 @@ class _HomeState extends State<Home> {
     });
   }
 
+  Stack _buildScreens() {
+    List<Widget> children = [];
+    _pages.asMap().forEach((index, value) {
+      children.add(
+        Offstage(
+          offstage: _currentNavBarIndex != index,
+          child: TickerMode(
+            enabled: _currentNavBarIndex == index,
+            child: value,
+          ),
+        ),
+      );
+    });
+
+    return Stack( children: children, );
+  }
 }
