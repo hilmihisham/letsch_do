@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:letsch_do/src/screens/about_page.dart';
+import 'package:letsch_do/src/screens/dailyUpdate_page.dart';
 
 // class for side drawer widget
 class SideDrawer extends StatelessWidget {
@@ -20,6 +21,23 @@ class SideDrawer extends StatelessWidget {
               color: Colors.red[900],
             ),
           ),
+          // 20201214 added path to Daily Update screen [start]
+          ListTile(
+            leading: Icon(Icons.update),
+            title: Text('Daily Update'),
+            onTap: () => {
+              // dismiss the side drawer
+              Navigator.of(context).pop(), 
+
+              // push about page to navigator
+              Navigator.push(context, MaterialPageRoute(
+                builder: (BuildContext context) => DailyUpdatePage(
+                  payload: "SideDrawer",
+                )
+              )),
+            },
+          ),
+          // 20201214 Daily Update screen [end]
           ListTile(
             leading: Icon(Icons.info_outline),
             title: Text('About'),
@@ -33,7 +51,7 @@ class SideDrawer extends StatelessWidget {
                 builder: (BuildContext context) => AboutPage()
               )),
             },
-          )
+          ),
         ],
       ),
     );
