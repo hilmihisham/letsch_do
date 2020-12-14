@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:letsch_do/src/screens/dailyUpdate_page.dart';
 import 'package:letsch_do/src/screens/future_list.dart';
 import 'package:letsch_do/src/screens/log_list.dart';
 import 'package:letsch_do/src/screens/side_drawer.dart';
@@ -58,9 +59,14 @@ class _HomeState extends State<Home> {
     Navigator.of(context).push(
       MaterialPageRoute(
         builder: (_) {
-          return NewScreen(
+          // 20201214 moved and rename NewScreen class [start]
+          // return NewScreen(
+          //   payload: payload,
+          // );
+          return DailyUpdatePage(
             payload: payload,
           );
+          // 20201214 [end]
         }
       )
     );
@@ -161,33 +167,33 @@ class _HomeState extends State<Home> {
 
 }
 
-class NewScreen extends StatelessWidget {
-  String payload;
+// class NewScreen extends StatelessWidget {
+//   String payload;
 
-  NewScreen({
-    @required this.payload,
-  });
+//   NewScreen({
+//     @required this.payload,
+//   });
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Notifications menu'),
-      ),
-      body: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: <Widget>[
-            Padding(
-              padding: EdgeInsets.all(15.0),
-              child: Text(
-                'Hello!',
-                textAlign: TextAlign.center,
-                textScaleFactor: 1.3,
-              ),
-            ),
-          ],
-        ),
-    );
-  }
-}
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//       appBar: AppBar(
+//         title: Text('Notifications menu'),
+//       ),
+//       body: Column(
+//           mainAxisAlignment: MainAxisAlignment.center,
+//           crossAxisAlignment: CrossAxisAlignment.center,
+//           children: <Widget>[
+//             Padding(
+//               padding: EdgeInsets.all(15.0),
+//               child: Text(
+//                 'Hello!',
+//                 textAlign: TextAlign.center,
+//                 textScaleFactor: 1.3,
+//               ),
+//             ),
+//           ],
+//         ),
+//     );
+//   }
+// }
