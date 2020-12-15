@@ -148,6 +148,24 @@ class DatabaseHelper {
     return result;
   }
 
+  // 20201215 get count for yesterday's done task (use in Daily Update page) [start]
+  Future<int> getYesterdayDoneTaskCount() async {
+    Database db = await this.database;
+
+    // get yesterday date at 0000hrs in epoch
+    DateTime ytdDate = DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day-1);
+    debugPrint("ytdDate = " + ytdDate.toString());
+    int ytdDateEpoch = ytdDate.millisecondsSinceEpoch;
+
+    // query
+    List<Map<String, dynamic>> x = await db.rawQuery('SELECT COUNT (*) FROM $todoTable WHERE $colDateDone=?', [ytdDateEpoch]);
+    int result = Sqflite.firstIntValue(x);
+    debugPrint("query: SELECT COUNT (*) FROM $todoTable WHERE $colDateDone=? | result = " + result.toString());
+    
+    return result;
+  }
+  // 20201215 yesterday's done task count [end]
+
   // Get the 'Map List' [ List<Map> ] and convert it to 'todo List' [ List<Todo> ]
   Future<List<Todo>> getTodoList() async {
     
