@@ -38,7 +38,7 @@ class _HomeState extends State<Home> {
   @override
   void initState() {
     super.initState();
-    var initializationSettingsAndroid = AndroidInitializationSettings('@mipmap/ic_launcher');
+    var initializationSettingsAndroid = AndroidInitializationSettings('@mipmap/launcher_icon');
     var initSettings = InitializationSettings(
       android: initializationSettingsAndroid,
     );
