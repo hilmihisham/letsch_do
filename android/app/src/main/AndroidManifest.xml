@@ -2,7 +2,7 @@
     package="com.example.letsch_do">
    <application
         android:label="Let'sch Do!"
-        android:icon="@mipmap/ic_launcher">
+        android:icon="@mipmap/launcher_icon">
         <activity
             android:name=".MainActivity"
             android:launchMode="singleTop"
